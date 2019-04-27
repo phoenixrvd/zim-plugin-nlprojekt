@@ -1,0 +1,21 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2019-04-15T02:14:51+02:00
+
+====== Montag 15 Apr 2019 ======
+
+[[Statik:Intern:0589 Internes Projekt1]]
+[*] Multi-Tasking-Tätigkeit:
+	[*] Tätigkeit1
+	[*] Tätigkeit2
+[*] @zp 1
+
+[[Statik:Intern:0587 Internes Projekt2]]
+[*] Unterschiedliche organisatorische Tätigkeiten
+[ ] @zp 2,5 [ 1,5 [ Hier interne Notiz
+
+________________________________________________
+ Mount
+
+{{./pasted_image.png}}
+
