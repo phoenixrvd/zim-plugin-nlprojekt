@@ -1,5 +1,6 @@
 import inspect
 import re
+import sys
 from typing import List
 
 from zim.actions import action
@@ -34,7 +35,9 @@ class NlProjectPlugin(PluginClass):
 
     @classmethod
     def check_dependencies(cls):
-        return (requests and json), [
+        sys_python_version = sys.version_info[0] >= 3
+        return (sys_python_version and requests and json), [
+            ('python3', sys_python_version, True),
             ('requests', requests, True),
             ('json', json, True),
         ]
