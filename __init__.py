@@ -81,7 +81,7 @@ class Rpc:
         method_name = inspect.stack()[1].function
         return self.send_request(method_name, method_args)
 
-    def send_request(self, method_name: str, method_args:  list):
+    def send_request(self, method_name: str, method_args: list):
         headers = {'content-type': 'application/json'}
         payload = {
             'method': method_name,
@@ -92,6 +92,7 @@ class Rpc:
         response = requests.post(self.url, data=json.dumps(payload), headers=headers).json()
         assert response['jsonrpc']
         return response['result']
+
 
 class ProjectEntry:
 
@@ -163,7 +164,7 @@ class ProjectsList(List):
         return self.__time_total
 
     @staticmethod
-    def parse_journal_day(content_lines) -> List:
+    def parse_journal_day(content_lines) -> 'ProjectsList':
         projects = ProjectsList()
         project_entry = None
 
@@ -189,7 +190,7 @@ class ProjectsList(List):
 
 class CheckEntryDialog(Dialog):
 
-    def __init__(self, parent: PageViewExtension,  entry: ProjectEntry, projects_list: ProjectsList):
+    def __init__(self, parent: PageViewExtension, entry: ProjectEntry, projects_list: ProjectsList):
         self.textview = parent.pageview.textview
         self.date = '-'.join(parent.pageview.get_page().source_file.pathnames[-3:]).rstrip('.txt')
         self.entry = entry
