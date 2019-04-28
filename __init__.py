@@ -156,7 +156,7 @@ class ProjectEntry:
 
         for line in content_lines:
 
-            if re.match(r'^\[\[.+:\d{4}.+', line):
+            if re.match(r'^\[\[.+:\d{4}.+', line) and project_entry is None:
                 project_entry = ProjectEntry()
                 project_entry.head_line = line.strip()
                 continue
