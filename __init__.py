@@ -47,7 +47,7 @@ class NlProjectPageViewExtension(PageViewExtension):
 
     @action(_('_Zeiten nach NL-Projekt übertragen'), accelerator='<Control><Shift>K', menuhints='tools')  # T: Menu item
     def on_submit_time_for_all_projects(self):
-        lines = get_dumper('wiki').dump(self.pageview.get_parsetree())
+        lines = get_dumper('plain').dump(self.pageview.get_parsetree())
         entries = ProjectsList.parse_journal_day(lines)
 
         cursor_position = self.pageview.get_cursor_pos()
@@ -107,7 +107,7 @@ class ProjectEntry:
         return '\n'.join(self.content).strip()
 
     def time_total(self):
-        return self.time_format(re.search(r'@zp (\d+(,\d+)?)', self.time_entry).group(1))
+        return self.time_format(re.search(r'@zp +(\d+(,\d+)?)', self.time_entry).group(1))
 
     def time_client(self):
         matches = re.search(r'(\d+).*\[.*(\d+(,\d+))', self.time_entry)
@@ -169,7 +169,7 @@ class ProjectsList(List):
 
         for line in content_lines:
 
-            if re.match(r'^\[\[.+:\d{4}.+', line) and project_entry is None:
+            if re.match(r'^.+:.+:\d{4}.+', line) and project_entry is None:
                 project_entry = ProjectEntry()
                 project_entry.head_line = line.strip()
                 continue
