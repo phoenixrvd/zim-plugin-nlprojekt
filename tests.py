@@ -23,8 +23,9 @@ class TestProjectEntry(unittest.TestCase):
         fixture_path = os.path.join(dirname, 'tests_fixtures/journal_day.txt')
         with open(fixture_path, 'r') as f:
             content_lines = f.readlines()
-            project_entries = ProjectEntry.parse_journal_day(content_lines)
+            project_entries = ProjectsList.parse_journal_day(content_lines) # type: ProjectsList
         self.assertEqual(2, len(project_entries))
+        self.assertEqual(3.5, project_entries.time_total())
 
     def test_number(self):
         self.assertEqual(589, self.entry.number())

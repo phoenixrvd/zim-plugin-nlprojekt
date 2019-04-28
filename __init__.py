@@ -48,7 +48,7 @@ class NlProjectPageViewExtension(PageViewExtension):
     @action(_('_Zeiten nach NL-Projekt übertragen'), accelerator='<Control><Shift>K', menuhints='tools')  # T: Menu item
     def on_submit_time_for_all_projects(self):
         lines = get_dumper('wiki').dump(self.pageview.get_parsetree())
-        entries = ProjectEntry.parse_journal_day(lines)
+        entries = ProjectsList.parse_journal_day(lines)
 
         cursor_position = self.pageview.get_cursor_pos()
 
@@ -57,7 +57,7 @@ class NlProjectPageViewExtension(PageViewExtension):
 
         for entry in entries:
             if entry.is_new():
-                CheckEntryDialog(self, entry).run()
+                CheckEntryDialog(self, entry, entries).run()
             self.pageview.find_next()
 
         self.pageview.set_cursor_pos(cursor_position)
@@ -92,7 +92,6 @@ class Rpc:
         response = requests.post(self.url, data=json.dumps(payload), headers=headers).json()
         assert response['jsonrpc']
         return response['result']
-
 
 class ProjectEntry:
 
@@ -149,9 +148,23 @@ class ProjectEntry:
         ])
         return description
 
+
+class ProjectsList(List):
+
+    def __init__(self):
+        super().__init__()
+        self.__time_total = 0.0
+
+    def append(self, entry: ProjectEntry) -> None:
+        self.__time_total += entry.time_total()
+        return super().append(entry)
+
+    def time_total(self) -> float:
+        return self.__time_total
+
     @staticmethod
     def parse_journal_day(content_lines) -> List:
-        projects = []
+        projects = ProjectsList()
         project_entry = None
 
         for line in content_lines:
@@ -176,7 +189,7 @@ class ProjectEntry:
 
 class CheckEntryDialog(Dialog):
 
-    def __init__(self, parent: PageViewExtension,  entry: ProjectEntry):
+    def __init__(self, parent: PageViewExtension,  entry: ProjectEntry, projects_list: ProjectsList):
         self.textview = parent.pageview.textview
         self.date = '-'.join(parent.pageview.get_page().source_file.pathnames[-3:]).rstrip('.txt')
         self.entry = entry
@@ -188,7 +201,10 @@ class CheckEntryDialog(Dialog):
         Dialog.__init__(
             self,
             parent,
-            title=_('Bitte den Eintrag überprüfen'),
+            title=_('Bitte den Eintrag überprüfen (Stunden: {0:.2f} von {1:.2f})').format(
+                entry.time_total(),
+                projects_list.time_total(),
+            ),
             button=_('Alles korrekt. Jetzt Speichern')
         )  # T: Dialog button
         self.add_form([entry.check_description()], {})
