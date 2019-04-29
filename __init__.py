@@ -1,7 +1,9 @@
 import inspect
 import re
+import socket
 import sys
 from typing import List
+from urllib.parse import urlparse
 
 from zim.actions import action
 from zim.config import ConfigDict
@@ -110,8 +112,13 @@ class ProjectEntry:
     def details(self):
         return '\n'.join(self.content).strip()
 
-    def time_total(self):
-        return self.time_format(re.search(r'@zp +(\d+(,\d+)?)', self.time_entry).group(1))
+    def time_total(self) -> float:
+        matches = re.search(r'@zp +(\d+(,\d+)?)', self.time_entry)
+
+        if matches is None:
+            return 0.0
+
+        return self.time_format(matches.group(1))
 
     def time_client(self):
         matches = re.search(r'(\d+).*\[.*(\d+(,\d+))', self.time_entry)
@@ -173,7 +180,7 @@ class ProjectsList(List):
 
         for line in content_lines:
 
-            if re.match(r'^.+:.+:\d{4}.+', line) and project_entry is None:
+            if re.match(r'^.+:\d{4} .+', line) and project_entry is None:
                 project_entry = ProjectEntry()
                 project_entry.head_line = line.strip()
                 continue
