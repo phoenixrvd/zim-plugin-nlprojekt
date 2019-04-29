@@ -70,7 +70,7 @@ class NlProjectPageViewExtension(PageViewExtension):
 class Rpc:
 
     def __init__(self, url: str):
-        self.url = url
+        self.url = urlparse(url)
 
     # TODO: Bug-Report → NL-Projekt muss auch nicht abrechenbare Zeit + Interne kommentare erlauben!
     def addVorgang(self, projekt_nummer: int, datum: str, zeit: float, message: str) -> float:
@@ -82,16 +82,19 @@ class Rpc:
         return self.send_request(method_name, method_args)
 
     def send_request(self, method_name: str, method_args: list):
-        headers = {'content-type': 'application/json'}
         payload = {
             'method': method_name,
             'params': method_args,
             'jsonrpc': '2.0',
             'id': 0,
         }
-        response = requests.post(self.url, data=json.dumps(payload), headers=headers).json()
-        assert response['jsonrpc']
-        return response['result']
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((self.url.hostname, self.url.port))
+            s.sendall(json.dumps(payload).encode())
+            data = json.loads(s.recv(1024))
+
+        assert data['jsonrpc']
+        return data['result']
 
 
 class ProjectEntry:
