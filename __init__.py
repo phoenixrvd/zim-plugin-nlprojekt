@@ -192,7 +192,7 @@ class ProjectsList(List):
                 continue
 
             if project_entry:
-                project_entry.content.append(line.strip())
+                project_entry.content.append(line.strip('\n'))
                 continue
 
         return projects
