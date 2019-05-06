@@ -218,7 +218,7 @@ class CheckEntryDialog(Dialog):
             ),
             button=_('Alles korrekt. Jetzt Speichern')
         )  # T: Dialog button
-        self.add_form([entry.check_description()], {})
+        self.add_text(entry.check_description())
 
     def do_response_ok(self) -> bool:
         try:
